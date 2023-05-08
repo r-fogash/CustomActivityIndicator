@@ -3,4 +3,4 @@
 # Custom Activity indicator view
 It is a replication of the UIActivityIndicatorView
 
-![](resources/demo.gif)
+![](Resources/demo.gif)
