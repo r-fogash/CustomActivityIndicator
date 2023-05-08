@@ -51,9 +51,7 @@ IB_DESIGNABLE
 }
 
 - (void)layoutSubviews {
-    CGFloat x = (CGRectGetWidth(self.bounds) - kDefaultSize) / 2;
-    CGFloat y = (CGRectGetHeight(self.bounds) - kDefaultSize) / 2;
-    self.replicationLayer.frame = CGRectMake(x, y, kDefaultSize, kDefaultSize);
+    [self adjustReplicationLayerFrame];
     [super layoutSubviews];
 }
 
@@ -102,17 +100,28 @@ IB_DESIGNABLE
     _maxNumberOfLines = kMaxNumberOfLines;
     _numberOfLines = kInitialNumberOfLines;
     
+    [self installReplicationLayer];
+    
+    CALayer *line = [self makeLayerToReplicate];
+    [self.replicationLayer addSublayer:line];
+    self.replicationLayer.instanceCount = _numberOfLines;
+    CGFloat angle = (M_PI * 2.0) / kMaxNumberOfLines;
+    self.replicationLayer.instanceTransform = CATransform3DMakeRotation(angle, 0, 0, 1);
+}
+
+- (void)installReplicationLayer {
     CAReplicatorLayer* replicationLayer = [[CAReplicatorLayer alloc] init];
     [self.layer addSublayer:replicationLayer];
-    
+    self.replicationLayer = replicationLayer;
+}
+
+- (void)adjustReplicationLayerFrame {
     CGFloat x = (CGRectGetWidth(self.bounds) - kDefaultSize) / 2;
     CGFloat y = (CGRectGetHeight(self.bounds) - kDefaultSize) / 2;
-    replicationLayer.frame = CGRectMake(x, y, kDefaultSize, kDefaultSize);
-    
-    self.replicationLayer = replicationLayer;
-    
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    
+    self.replicationLayer.frame = CGRectMake(x, y, kDefaultSize, kDefaultSize);
+}
+
+- (CALayer*)makeLayerToReplicate {
     CALayer *line = [[CALayer alloc] init];
     line.frame = CGRectMake(kDefaultSize/2.f - kDefaultLineWidth/2.f,
                             0.f,
@@ -120,12 +129,12 @@ IB_DESIGNABLE
                             kDefaultLineHeight);
     
     line.cornerRadius = kDefaultLineCornerRadius;
-    line.backgroundColor = indicator.color.CGColor;
-    
-    [self.replicationLayer addSublayer:line];
-    self.replicationLayer.instanceCount = _numberOfLines;
-    CGFloat angle = (M_PI * 2) / kMaxNumberOfLines;
-    self.replicationLayer.instanceTransform = CATransform3DMakeRotation(angle, 0, 0, 1);
+    line.backgroundColor = [self indicatorBackgroundColor].CGColor;
+    return line;
+}
+
+- (UIColor*)indicatorBackgroundColor {
+    return [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray].backgroundColor;
 }
 
 @end
