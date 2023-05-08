@@ -3,4 +3,4 @@
 # Custom Activity indicator view
 It is a replication of the UIActivityIndicatorView
 
-![](https://github.com/r-fogash/CustomActivityIndicator/tree/main/Resources)/demo.gif)
+![](https://github.com/r-fogash/CustomActivityIndicator/tree/main/Resources/demo.gif)
